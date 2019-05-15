@@ -74,7 +74,6 @@ def main():
 
         data_samples.append((name, get_audio_path(audio_file)))
         unique_composers.add(name)
-        break
 
     unique_composers = sorted(unique_composers)
 
