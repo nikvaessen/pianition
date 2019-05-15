@@ -24,4 +24,3 @@ info contains the following keys:
 * `id_to_composer`: dictionary mapping an id to a composer name
 * `n_fft`: n_fft parameter used in computing the mffc
 * `hop_length`: hop_lengths parameter used in computing the mfcc
-*
