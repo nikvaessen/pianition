@@ -10,16 +10,12 @@
 #
 ################################################################################
 
-import sys
 import os
 import json
 
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 import librosa
-import librosa.display as display
 
 ################################################################################
 # Constants
@@ -40,11 +36,11 @@ def get_audio_path(audio_fn):
     return os.path.join(unzipped_dir_name, audio_fn)
 
 
-def create_spectogram(audio_file_path):
+def create_spectogram(audio_file_path, n_fft=2048, hop_length=1024):
     y, sr = librosa.load(audio_file_path)
 
     spect = librosa.feature.melspectrogram(y=y, sr=sr,
-                                           n_fft=2048, hop_length=1024)
+                                           n_fft=n_fft, hop_length=hop_length)
     spect = librosa.power_to_db(spect, ref=np.max)
 
     return spect.T
@@ -53,11 +49,11 @@ def create_spectogram(audio_file_path):
 ################################################################################
 # Main function executing parsing logic
 
-def convert(sample, composer_to_id):
+def convert(sample, composer_to_id, n_fft=2048, hop_length=1024):
     name, file_path = sample
 
     id = composer_to_id[name]
-    spectogram = create_spectogram(file_path)
+    spectogram = create_spectogram(file_path, n_fft=n_fft, hop_length=hop_length)
 
     return id, spectogram
 
@@ -85,9 +81,25 @@ def main():
     composer_to_id = {name: idx for idx, name in enumerate(unique_composers)}
     id_to_composer = {idx: name for idx, name in composer_to_id.items()}
 
-    data_samples = [convert(sample, composer_to_id) for sample in data_samples]
+    n_fft = 2048
+    hop_length = 1024
 
-    print(data_samples[0])
+    data_samples = [convert(sample, composer_to_id,
+                            n_fft=n_fft, hop_length=hop_length)
+                    for sample in data_samples]
+
+    n_samples = len(data_samples)
+
+    info = {
+        'n_samples': n_samples,
+        'composer_to_id': composer_to_id,
+        'id_to_composer': id_to_composer,
+        'n_fft': n_fft,
+        'hop_length':  hop_length
+    }
+
+    np.savez_compressed('mfcc_full_samples.npz',
+                        samples=data_samples, info=info)
 
     pass
 
