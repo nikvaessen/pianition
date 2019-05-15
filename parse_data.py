@@ -50,7 +50,7 @@ def create_spectogram(audio_file_path, n_fft=2048, hop_length=1024):
 # Main function executing parsing logic
 
 def convert(sample, composer_to_id, idx, n_fft=2048, hop_length=1024):
-    print("\r{}/{}".format(idx, len(d)), end='', flush=True)
+    print("\r{}/{}".format(idx[0], idx[1]), end='', flush=True)
 
     name, file_path = sample
 
@@ -82,7 +82,7 @@ def main():
     n_fft = 2048
     hop_length = 1024
 
-    data_samples = [convert(sample, composer_to_id, idx,
+    data_samples = [convert(sample, composer_to_id, (idx, len(data_samples)),
                             n_fft=n_fft, hop_length=hop_length)
                     for idx, sample in enumerate(data_samples)]
 
