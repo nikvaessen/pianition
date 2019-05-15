@@ -49,7 +49,9 @@ def create_spectogram(audio_file_path, n_fft=2048, hop_length=1024):
 ################################################################################
 # Main function executing parsing logic
 
-def convert(sample, composer_to_id, n_fft=2048, hop_length=1024):
+def convert(sample, composer_to_id, idx, n_fft=2048, hop_length=1024):
+    print("\r{}/{}".format(idx, len(d)), end='', flush=True)
+
     name, file_path = sample
 
     id = composer_to_id[name]
@@ -65,10 +67,7 @@ def main():
     unique_composers = set()
     data_samples = []
 
-    for idx, obj in enumerate(d):
-        if idx % 10 == 0:
-            print("\r{}/{}".format(idx, len(d)), end='', flush=True)
-
+    for obj in d:
         name = obj[json_key_composer_name]
         audio_file = obj[json_key_audio_file_path]
 
@@ -83,9 +82,9 @@ def main():
     n_fft = 2048
     hop_length = 1024
 
-    data_samples = [convert(sample, composer_to_id,
+    data_samples = [convert(sample, composer_to_id, idx,
                             n_fft=n_fft, hop_length=hop_length)
-                    for sample in data_samples]
+                    for idx, sample in enumerate(data_samples)]
 
     n_samples = len(data_samples)
 
