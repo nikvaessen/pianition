@@ -26,8 +26,7 @@ import librosa.display as display
 
 meta_data_fn = 'maestro-v2.0.0.json'
 data_zip_fn = 'maestro-v2.0.0.zip'
-unzipped_dir_name = ''
-print("unzipped_dir_name is TBD, please fix")
+unzipped_dir_name = 'maestro-v2.0.0'
 
 json_key_composer_name = 'canonical_composer'
 json_key_audio_file_path = 'audio_filename'
@@ -70,13 +69,16 @@ def main():
     unique_composers = set()
     data_samples = []
 
-    for obj in d:
-        print(obj)
+    for idx, obj in enumerate(d):
+        if idx % 10 == 0:
+            print("\r{}/{}".format(idx, len(d)), end='', flush=True)
+
         name = obj[json_key_composer_name]
         audio_file = obj[json_key_audio_file_path]
 
         data_samples.append((name, get_audio_path(audio_file)))
         unique_composers.add(name)
+        break
 
     unique_composers = sorted(unique_composers)
 
