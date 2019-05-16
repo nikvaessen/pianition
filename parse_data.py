@@ -82,9 +82,10 @@ def main():
     n_fft = 2048
     hop_length = 1024
 
-    data_samples = [convert(sample, composer_to_id, (idx, len(data_samples)),
-                            n_fft=n_fft, hop_length=hop_length)
-                    for idx, sample in enumerate(data_samples)]
+    for idx, sample in enumerate(data_samples):
+        sample = convert(sample, composer_to_id, (idx, len(data_samples)))
+        sample_path = os.path.join("data", "sample_{}.npz".format(idx))
+        np.savez_compressed(sample_path, sample)
 
     n_samples = len(data_samples)
 
@@ -93,11 +94,10 @@ def main():
         'composer_to_id': composer_to_id,
         'id_to_composer': id_to_composer,
         'n_fft': n_fft,
-        'hop_length':  hop_length
+        'hop_length': hop_length
     }
 
-    np.savez_compressed('mfcc_full_samples.npz',
-                        samples=data_samples, info=info)
+    np.savez_compressed(os.path.join("data", "info.npz"), info=info)
 
     pass
 
