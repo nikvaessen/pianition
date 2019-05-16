@@ -12,7 +12,7 @@ import numpy as np
 info = np.load('info.npz')['info']
 
 for path in info['paths']:
-  sample = np.load(path)['sample']
+  sample = np.load(path)['arr_0']
   id = sample[0]
   mfcc = sample[1]
 ```
