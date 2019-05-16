@@ -21,6 +21,7 @@ import librosa
 # Constants
 
 data_dir = "data"
+sample_dir = os.path.join(data_dir, "samples")
 
 meta_data_fn = 'maestro-v2.0.0.json'
 data_zip_fn = 'maestro-v2.0.0.zip'
@@ -87,10 +88,12 @@ def main():
     n_fft = 2048
     hop_length = 1024
 
+    paths = []
     for idx, sample in enumerate(data_samples):
         sample = convert(sample, composer_to_id, (idx, len(data_samples)))
-        sample_path = os.path.join(data_dir, "sample_{}.npz".format(idx))
+        sample_path = os.path.join(sample_dir, "sample_{}.npz".format(idx))
         np.savez_compressed(sample_path, sample)
+        paths.append(sample_path)
 
     n_samples = len(data_samples)
 
@@ -99,7 +102,8 @@ def main():
         'composer_to_id': composer_to_id,
         'id_to_composer': id_to_composer,
         'n_fft': n_fft,
-        'hop_length': hop_length
+        'hop_length': hop_length,
+        'paths': paths
     }
 
     np.savez_compressed(os.path.join(data_dir, "info.npz"), info=info)
