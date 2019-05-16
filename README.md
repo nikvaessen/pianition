@@ -4,18 +4,18 @@
 
 `./download.sh` to download the (100 gb) .zip file of the dataset.
 
-`python3 data_parse.py` to generate the (1 gb) comprezzed numpy object file ' with the following keys:
+`python3 data_parse.py` to generate a `sample_<id>.npz` file for each data sample.
 
 ```python
 import numpy as np
 
-obj = np.load('mfcc_full_samples.npz')
+info = np.load('info.npz')
 
-samples = obj['samples']
-info = obj['info']
+for path in info['paths']:
+  sample = np.load('path')
+  id = sample[0]
+  mfcc = sample[1]
 ```
-
-samples contains an array of `info['n_samples'] tuples, where each tuple is a (id, mfcc) sample. 
 
 info contains the following keys:
 
@@ -24,3 +24,4 @@ info contains the following keys:
 * `id_to_composer`: dictionary mapping an id to a composer name
 * `n_fft`: n_fft parameter used in computing the mffc
 * `hop_length`: hop_lengths parameter used in computing the mfcc
+* `paths`': an array with the relative path to all data samples.
