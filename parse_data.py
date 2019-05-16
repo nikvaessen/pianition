@@ -67,6 +67,9 @@ def main():
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
 
+    if not os.path.isdir(sample_dir):
+        os.mkdir(sample_dir)
+
     with open(meta_data_fn, 'r') as f:
         d = json.load(f)
 
