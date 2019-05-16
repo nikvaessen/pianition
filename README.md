@@ -9,10 +9,10 @@
 ```python
 import numpy as np
 
-info = np.load('info.npz')
+info = np.load('info.npz')['info']
 
 for path in info['paths']:
-  sample = np.load(path)
+  sample = np.load(path)['sample']
   id = sample[0]
   mfcc = sample[1]
 ```
