@@ -4,7 +4,7 @@
 
 `./download.sh` to download the (100 gb) .zip file of the dataset.
 
-`python3 data_parse.py` to generate a `sample_<id>.npz` file for each data sample.
+`python3 data_parse.py` to generate a `sample_<number>.npz` file for each data sample.
 
 ```python
 import numpy as np
