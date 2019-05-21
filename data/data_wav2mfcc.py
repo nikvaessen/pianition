@@ -142,7 +142,7 @@ def main():
     }
 
     with open(os.path.join(data_dir, "mfcc.json"), 'w') as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=4)
 
 
 if __name__ == '__main__':
