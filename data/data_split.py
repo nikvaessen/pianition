@@ -128,7 +128,7 @@ def get_data(paths,
 
     if progress_bar:
         print()
-s
+
     return sample_mfcc, label_composer, label_song
 
 
