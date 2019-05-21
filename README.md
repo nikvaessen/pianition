@@ -1,4 +1,4 @@
-# dt2219-speech-project
+# Pianition, a neural network for recognising piano composers
 
 # Data
 
