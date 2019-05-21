@@ -229,6 +229,7 @@ def main():
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
+    print(tr_paths)
     # Training data
     print("extracting training data...")
     tr = get_data(tr_paths, split_data=False, only_first_window=True,
