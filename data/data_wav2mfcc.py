@@ -21,6 +21,7 @@ import librosa
 
 data_dir = "mfcc"
 sample_dir = os.path.join(data_dir, "samples")
+sample_dir_standalone = "samples"
 
 meta_data_fn = os.path.join('maestro-v2.0.0.json')
 data_zip_fn = os.path.join('maestro-v2.0.0.zip')
@@ -114,7 +115,8 @@ def main():
         composer_id = composer_to_id[composer_name]
         song_id = song_to_id[song_name]
 
-        sample_path = os.path.join(sample_dir, "sample_{}.npz".format(idx))
+        sample_path = os.path.join(sample_dir_standalone,
+                                   "sample_{}.npz".format(idx))
 
         mfcc = convert(audio_file, idx, len(data_samples))
         saved_sample = (composer_id, mfcc)
