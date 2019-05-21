@@ -7,6 +7,8 @@
 
 import math
 
+import numpy as np
+
 from pianition import data_util
 
 ################################################################################
@@ -86,13 +88,17 @@ def main():
     print(len(v_paths), v_paths[0:2])
     print(len(t_paths), t_paths[0:2])
 
-    tr = data_util._get_data(tr_paths[0:10], split_data=False, only_first_window=True)
-    # v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
-    # t = data_util._get_data(t_paths, split_data=False, only_first_window=True)
+    tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True)
+    v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
+    t = data_util._get_data(t_paths, split_data=False, only_first_window=True)
 
-    print(len(tr), tr[0][0], tr[0][1].shape)
+    # print(len(tr), tr[0][0], tr[0][1].shape)
     # print(len(v), v[0].shape)
     # print(len(t), t[0].shape)
+
+    np.savez_compressed("debug_training", tr)
+    np.savez_compressed("debug_val", v)
+    np.savez_compressed("debug_test", t)
 
 
 if __name__ == '__main__':
