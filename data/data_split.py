@@ -144,8 +144,6 @@ def get_allowed_paths(use_only_count_bigger_than=30):
 
     allowed_composers = [id for id, count in get_id_count().items()
                          if count > use_only_count_bigger_than]
-    print("id count:", get_id_count())
-    print("allowed composers", allowed_composers)
 
     allowed_paths = []
 
@@ -162,7 +160,6 @@ def get_allowed_paths(use_only_count_bigger_than=30):
 
 def tracks_by_composer_id():
     allowed_tracks = get_allowed_paths(use_only_count_bigger_than=minimum_num_samples_by_composer)
-    print("allowed tracks", allowed_tracks)
     track_by_composer = {}
 
     for track, comp_id, song_id in allowed_tracks:
@@ -233,12 +230,12 @@ def main():
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
-    print(tr_paths)
+    print(tr_paths[0:5])
     # Training data
     print("extracting training data...")
     tr = get_data(tr_paths, split_data=False, only_first_window=True,
                   progress_bar=True)
-    print(tr)
+    # print(tr)
     print(tr[0])
     # output_pa
 
