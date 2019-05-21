@@ -56,6 +56,7 @@ def _get_info() -> dict:
 
 def _load_sample(path: str) -> Tuple[int, np.ndarray]:
     sample = np.load(path, allow_pickle=True)['arr_0'].item()
+    print(sample)
 
     if each_column_is_mfcc:
         sample[1] = sample[1].transpose()
