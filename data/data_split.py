@@ -82,9 +82,9 @@ def create_split_paths():
 def main():
     tr_paths, v_paths, t_paths = create_split_paths()
 
-    print(len(tr_paths), tr_paths)
-    print(len(v_paths), v_paths)
-    print(len(t_paths), t_paths)
+    print(len(tr_paths), tr_paths[0:5])
+    print(len(v_paths), v_paths[0:5])
+    print(len(t_paths), t_paths[0:5])
 
     tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True)
     v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
