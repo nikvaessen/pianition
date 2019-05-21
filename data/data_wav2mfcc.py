@@ -20,12 +20,12 @@ from pianition import data_util
 ################################################################################
 # Constants
 
-data_dir = "data/"
+data_dir = "data"
 sample_dir = os.path.join(data_dir, "samples")
 
-meta_data_fn = 'maestro-v2.0.0.json'
-data_zip_fn = 'maestro-v2.0.0.zip'
-unzipped_dir_name = 'maestro-v2.0.0'
+meta_data_fn = os.path.join(data_dir, 'maestro-v2.0.0.json')
+data_zip_fn = os.path.join('maestro-v2.0.0.zip')
+unzipped_dir_name = os.path.join('maestro-v2.0.0')
 
 json_key_composer_name = 'canonical_composer'
 json_key_audio_file_path = 'audio_filename'
@@ -81,10 +81,10 @@ def main():
     paths = []
     paths_id = []
     for idx, sample in enumerate(data_samples):
-        sample = convert(sample, composer_to_id, (idx, len(data_samples)))
+        # sample = convert(sample, composer_to_id, (idx, len(data_samples)))
         sample_path = os.path.join(sample_dir, "sample_{}.npz".format(idx))
 
-        np.savez_compressed(sample_path, sample)
+        # np.savez_compressed(sample_path, sample)
 
         paths.append(sample_path)
         paths_id.append(sample[0])
