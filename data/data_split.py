@@ -160,7 +160,7 @@ def get_allowed_paths(use_only_count_bigger_than=30):
 
 def tracks_by_composer_id():
     allowed_tracks = get_allowed_paths(use_only_count_bigger_than=minimum_num_samples_by_composer)
-
+    print("allowed tracks", allowed_tracks)
     track_by_composer = {}
 
     for track, comp_id, song_id in allowed_tracks:
