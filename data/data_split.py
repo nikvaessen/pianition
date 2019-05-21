@@ -128,7 +128,7 @@ def get_id_count():
     info = get_info()
 
     count = {}
-    path_id = info[mfcc.json_mffc_paths]
+    path_id = info[mfcc.json_mffc_paths_composer_id]
 
     for id in path_id:
         if id in count:
