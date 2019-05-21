@@ -86,7 +86,8 @@ def _extract_first_window(sample, window_size=256):
 def _get_data(paths,
               split_data=True,
               only_first_window=False,
-              window_size=256):
+              window_size=256,
+              progress_bar=False):
     if split_data and only_first_window:
         raise ValueError("cannot split data AND only use first sample!")
     if not split_data and not only_first_window:
@@ -98,7 +99,10 @@ def _get_data(paths,
     gave_warning = False
     data_tuples = []
 
-    for path in paths:
+    for idx, path in enumerate(paths):
+        if progress_bar:
+            print("\r{}/{}".format(idx, len(paths)), flush=True, end="")
+
         if os.path.exists(path):
             id, sample = _load_sample(path)
 
@@ -116,6 +120,9 @@ def _get_data(paths,
             gave_warning = True
             print("Warning: one (or more) data paths are missing! (could "
                   "not find {})".format(path))
+
+    if progress_bar:
+        print()
 
     return data_tuples
 

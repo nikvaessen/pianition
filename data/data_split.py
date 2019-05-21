@@ -93,21 +93,24 @@ def main():
     tr_paths, v_paths, t_paths = create_split_paths()
 
     print("extracting training data...")
-    tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True)
+    tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True,
+                             progress_bar=True)
     tr_object_path = os.path.join(root_path, "train.npz")
     np.savez_compressed(tr_object_path, tr)
     tr = None
     print("training data saved to", tr_object_path)
 
     print("extracting validation data...")
-    v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
+    v = data_util._get_data(v_paths, split_data=False, only_first_window=True,
+                            progress_bar=True)
     v_object_path = os.path.join(root_path, "validation.npz")
     np.savez_compressed(v_object_path, v)
     v = None
     print("training data saved to", v_object_path)
 
     print("extracting test data...")
-    t = data_util._get_data(t_paths, split_data=False, only_first_window=True)
+    t = data_util._get_data(t_paths, split_data=False, only_first_window=True,
+                            progress_bar=True)
     t_object_path = os.path.join(root_path, "test.npz")
     np.savez_compressed(t_object_path, t)
     t = None
