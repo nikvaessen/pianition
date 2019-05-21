@@ -90,7 +90,7 @@ def main():
     # v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
     # t = data_util._get_data(t_paths, split_data=False, only_first_window=True)
 
-    print(len(tr), tr[0].shape)
+    print(len(tr), tr[0][0], tr[0][1].shape)
     # print(len(v), v[0].shape)
     # print(len(t), t[0].shape)
 
