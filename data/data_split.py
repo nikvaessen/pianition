@@ -86,7 +86,7 @@ def main():
     print(len(v_paths), v_paths[0:2])
     print(len(t_paths), t_paths[0:2])
 
-    tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True)
+    tr = data_util._get_data(tr_paths[0:10], split_data=False, only_first_window=True)
     # v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
     # t = data_util._get_data(t_paths, split_data=False, only_first_window=True)
 
