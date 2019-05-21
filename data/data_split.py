@@ -184,6 +184,8 @@ def create_split_paths():
     val = []
     test = []
 
+    print(track_by_composer)
+
     for comp_id, tracks in track_by_composer.items():
         n = len(tracks)
 
