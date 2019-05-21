@@ -25,6 +25,7 @@ json_data_test_path = "test_path"
 json_data_num_composers = "num_composers"
 json_data_split_fraction = "split_fraction"
 
+
 ################################################################################
 # Helper methods
 
@@ -68,7 +69,7 @@ def create_split_paths():
         num_train = n - num_val - num_test
 
         track_train = tracks[:num_train]
-        tracks_val = tracks[num_train: num_train+num_val]
+        tracks_val = tracks[num_train: num_train + num_val]
         tracks_test = tracks[-num_test:]
 
         train += track_train
@@ -81,6 +82,12 @@ def create_split_paths():
 ################################################################################
 # main function executing the splitting logic
 
+def save_objects(output_path, object_list):
+    for idx, (id, sample) in enumerate(object_list):
+        full_path = os.path.join(output_path, "sample{}.npz".format(idx))
+
+        np.savez_compressed(full_path, (id, sample))
+
 
 def main():
     if len(sys.argv) != 2:
@@ -92,30 +99,36 @@ def main():
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
+    # Training data
     print("extracting training data...")
     tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True,
                              progress_bar=True)
-    tr_object_path = os.path.join(root_path, "train.npz")
-    np.savez_compressed(tr_object_path, tr)
-    tr = None
-    print("training data saved to", tr_object_path)
+    output_path = os.path.join(root_path, "train")
+    save_objects(output_path, tr)
 
+    tr = None
+    print("training data saved to", output_path)
+
+    # Validation data
     print("extracting validation data...")
     v = data_util._get_data(v_paths, split_data=False, only_first_window=True,
                             progress_bar=True)
-    v_object_path = os.path.join(root_path, "validation.npz")
-    np.savez_compressed(v_object_path, v)
-    v = None
-    print("training data saved to", v_object_path)
+    output_path = os.path.join(root_path, "val")
+    save_objects(output_path, v)
 
+    v = None
+    print("validation data saved to", output_path)
+
+    # Testing data
     print("extracting test data...")
     t = data_util._get_data(t_paths, split_data=False, only_first_window=True,
                             progress_bar=True)
-    t_object_path = os.path.join(root_path, "test.npz")
-    np.savez_compressed(t_object_path, t)
-    t = None
-    print("training data saved to", t_object_path)
 
+    output_path = os.path.join(root_path, "test")
+    save_objects(output_path, t)
+
+    t = None
+    print("test data saved to", output_path)
 
 
 if __name__ == '__main__':
