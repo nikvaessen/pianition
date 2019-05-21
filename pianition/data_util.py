@@ -91,7 +91,7 @@ def _get_data(paths,
         raise ValueError("cannot split data AND only use first sample!")
     if not split_data and not only_first_window:
         raise ValueError("specify one of 'split_data' or 'use_first_window'")
-    if window_size < 1 or isinstance(window_size, int):
+    if window_size < 1 or not isinstance(window_size, int):
         raise ValueError("window size {} is invalid, "
                          "should be > 1 and integer".format(window_size))
 
