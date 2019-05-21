@@ -5,177 +5,159 @@
 ################################################################################
 
 import os
+import pathlib
+import json
 
-import librosa
 import numpy as np
 
-from typing import Tuple, List
+from keras.utils import to_categorical
 
 ################################################################################
 # Constants
 
-root_dir = "data"
+json_data_train = "train"
+json_data_val = "val"
+json_data_test = "test"
 
-info_file_path = os.path.join(root_dir, "info.npz")
+json_data_set_path = 'path'
+json_data_set_composer_label = 'composer-label'
+json_data_set_song_label = 'song-label'
 
-each_column_is_mfcc = True
-time_axis = 1 if each_column_is_mfcc else 0
-mffc_axis = 1 if time_axis == 0 else 0
+json_data_used_composer_id = "num_composers"
+json_data_used_song_id = "split_fraction"
 
-json_info_paths = 'paths'
-json_info_hop_length = 'hop_length'
-json_info_n_fft = 'n_fft'
-json_info_id_to_composer = 'id_to_composer'
-json_info_composer_to_id = 'composer_to_id'
-json_info_n_samples = 'n_samples'
-json_info_paths_id = 'paths_id'
+json_data_label_to_composer = 'label_to_composer'
+json_data_label_to_song = 'label_to_song'
 
 
 ################################################################################
-# Spectogram creation
+
+def get_abs_paths(root, paths):
+    corrected_paths = []
+
+    for path in paths:
+        corrected_paths.append(
+            os.path.join(root, *pathlib.Path(path).parts[1:])
+        )
+
+    return corrected_paths
 
 
-def create_spectogram(audio_file_path, n_fft=2048, hop_length=1024):
-    y, sr = librosa.load(audio_file_path)
+def load_dataset(path: str):
+    print("loaded dataset from {}".format(path))
 
-    spect = librosa.feature.melspectrogram(y=y, sr=sr,
-                                           n_fft=n_fft, hop_length=hop_length)
-    spect = librosa.power_to_db(spect, ref=np.max)
+    info_object = os.path.join(path, "info.json")
 
-    return spect.T
+    if not os.path.isfile(info_object):
+        raise ValueError("could not find 'info.json' in {}".format(
+            path
+        ))
+
+    with open(info_object, 'r') as f:
+        info = json.load(f)
+
+    train = info[json_data_train]
+    train_paths = get_abs_paths(path, train[json_data_set_path])
+    train_labels = train[json_data_set_composer_label]
+
+    val = info[json_data_val]
+    val_paths = get_abs_paths(path, val[json_data_set_path])
+    val_labels = val[json_data_set_composer_label]
+
+    test = info[json_data_test]
+    test_paths = get_abs_paths(path, test[json_data_set_path])
+    test_labels = test[json_data_set_composer_label]
+
+    num_classes = len(info[json_data_label_to_composer].keys())
+
+    return Dataset(
+        train_paths,
+        train_labels,
+        val_paths,
+        val_labels,
+        test_paths,
+        test_labels,
+        num_classes
+    )
+
+
+def load_paths(paths):
+    return [np.load(path, allow_pickle=True)['arr_0'] for path in paths]
+
+
+class Dataset:
+
+    def __init__(self,
+                 train_paths,
+                 train_labels,
+                 val_paths,
+                 val_labels,
+                 test_paths,
+                 test_labels,
+                 num_classes
+                 ):
+        self.train_paths = train_paths
+        self.train_labels = train_labels
+        self.val_paths = val_paths
+        self.val_labels = val_labels
+        self.test_paths = test_paths
+        self.test_labels = test_labels
+
+        self.num_classes = num_classes
+
+    def get_train_full(self):
+        x = load_paths(self.train_paths)
+        y = [to_categorical(label, num_classes=self.num_classes)
+             for label in self.train_labels]
+
+        return x, y
+
+    def get_val_full(self):
+        x = load_paths(self.val_paths)
+        y = [to_categorical(label, num_classes=self.num_classes)
+             for label in self.val_labels]
+
+        return x, y
+
+    def get_test_full(self):
+        x = load_paths(self.test_paths)
+        y = [to_categorical(label, num_classes=self.num_classes)
+             for label in self.test_labels]
+
+        return x, y
+
 
 ################################################################################
-#
 
 
-def _get_info() -> dict:
-    info = np.load(info_file_path, allow_pickle=True)['info']
+def quick_test():
+    dir = "/home/nik/kth/y1p1/speech/project/data/debug/"
+    train_dir = os.path.join(dir, "train")
+    val_dir = os.path.join(dir, "val")
+    test_dir = os.path.join(dir, "test")
 
-    return info.item()
+    for file in os.listdir(train_dir):
+        obj = np.load(os.path.join(train_dir, file), allow_pickle=True)['arr_0']
 
-
-def _load_sample(path: str) -> Tuple[int, np.ndarray]:
-    sample = np.load(path, allow_pickle=True)['arr_0']
-
-    if each_column_is_mfcc:
-        sample[1] = sample[1].transpose()
-
-    return sample
-
-
-def _split_sample(sample: np.ndarray, window_size=256) -> List[np.ndarray]:
-    num_splits = sample.shape[time_axis] // window_size
-
-    if each_column_is_mfcc:
-        sample = sample[:, 0:num_splits * window_size]
-    else:
-        sample = sample[0:num_splits * window_size, :]
-
-    samples = np.split(sample, num_splits, axis=time_axis)
-
-    return samples
-
-
-def _extract_first_window(sample, window_size=256):
-    if each_column_is_mfcc:
-        return sample[:, 0:window_size]
-    else:
-        return sample[0:window_size, :]
-
-
-def _get_data(paths,
-              split_data=True,
-              only_first_window=False,
-              window_size=256,
-              progress_bar=False):
-    if split_data and only_first_window:
-        raise ValueError("cannot split data AND only use first sample!")
-    if not split_data and not only_first_window:
-        raise ValueError("specify one of 'split_data' or 'use_first_window'")
-    if window_size < 1 or not isinstance(window_size, int):
-        raise ValueError("window size {} is invalid, "
-                         "should be > 1 and integer".format(window_size))
-
-    gave_warning = False
-    data_tuples = []
-
-    for idx, path in enumerate(paths):
-        if progress_bar:
-            print("\r{}/{}".format(idx, len(paths)), flush=True, end="")
-
-        if os.path.exists(path):
-            id, sample = _load_sample(path)
-
-            if split_data:
-                samples = [(id, sample) for sample in
-                           _split_sample(sample, window_size=window_size)]
-            else:
-                samples = [(id, _extract_first_window(sample,
-                                                      window_size=window_size))
-                           ]
-
-            data_tuples += samples
-
-        elif not gave_warning:
-            gave_warning = True
-            print("Warning: one (or more) data paths are missing! (could "
-                  "not find {})".format(path))
-
-    if progress_bar:
+        mfcc = obj
+        print(mfcc)
+        print(mfcc.shape)
         print()
+        break
 
-    return data_tuples
-
-
-def get_id_count():
-    info = _get_info()
-
-    count = {}
-    path_id = info[json_info_paths_id]
-
-    for id in path_id:
-        if id in count:
-            count[id] += 1
-        else:
-            count[id] = 1
-
-    return count
-
-
-def get_allowed_paths(use_only_count_bigger_than=30):
-    info = _get_info()
-
-    allowed_composers = [id for id, count in get_id_count().items()
-                         if count > use_only_count_bigger_than]
-
-    allowed_paths = []
-    paths = info[json_info_paths]
-    paths_id = info[json_info_paths_id]
-
-    for path, id in zip(paths, paths_id):
-        if id in allowed_composers:
-            allowed_paths.append((path, id))
-
-    return allowed_paths
-
-
-def get_training_data():
-    info = _get_info()
-    paths = info[json_info_paths]
-
-
-def get_validation_data():
-    pass
-
-
-def get_testing_data():
-    pass
-
-
-################################################################################
 
 def main():
-    get_train_val_test_paths()
+    dir = "/home/nik/kth/y1p1/speech/project/data/debug/"
+
+    ds = load_dataset(dir)
+
+    x, y = ds.get_train_full()
+
+    print(len(x))
+    print(len(y))
+
+    print(x[0], x[0].shape)
+    print(y[0], y[0].shape)
 
 
 if __name__ == '__main__':
