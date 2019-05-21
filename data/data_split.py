@@ -5,6 +5,8 @@
 # Author(s): Nik Vaessen
 ################################################################################
 
+import sys
+import os
 import math
 
 import numpy as np
@@ -82,23 +84,34 @@ def create_split_paths():
 
 
 def main():
+    if len(sys.argv) != 2:
+        print("usage: python3 data_split path_to_storage")
+
+    root_path = sys.argv[1]
+
     tr_paths, v_paths, t_paths = create_split_paths()
 
-    print(len(tr_paths), tr_paths[0:2])
-    print(len(v_paths), v_paths[0:2])
-    print(len(t_paths), t_paths[0:2])
-
+    print("extracting training data...")
     tr = data_util._get_data(tr_paths, split_data=False, only_first_window=True)
+    tr_object_path = os.path.join(root_path, "train.npz")
+    np.savez_compressed(tr_object_path, tr)
+    tr = None
+    print("training data saved to", tr_object_path)
+
+    print("extracting validation data...")
     v = data_util._get_data(v_paths, split_data=False, only_first_window=True)
+    v_object_path = os.path.join(root_path, "validation.npz")
+    np.savez_compressed(v_object_path, v)
+    v = None
+    print("training data saved to", v_object_path)
+
+    print("extracting test data...")
     t = data_util._get_data(t_paths, split_data=False, only_first_window=True)
+    t_object_path = os.path.join(root_path, "test.npz")
+    np.savez_compressed(t_object_path, t)
+    t = None
+    print("training data saved to", t_object_path)
 
-    # print(len(tr), tr[0][0], tr[0][1].shape)
-    # print(len(v), v[0].shape)
-    # print(len(t), t[0].shape)
-
-    np.savez_compressed("debug_training", tr)
-    np.savez_compressed("debug_val", v)
-    np.savez_compressed("debug_test", t)
 
 
 if __name__ == '__main__':
