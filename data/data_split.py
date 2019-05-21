@@ -233,6 +233,7 @@ def main():
     print("extracting training data...")
     tr = get_data(tr_paths, split_data=False, only_first_window=True,
                   progress_bar=True)
+    print(tr[0])
     # output_pa
 
 
@@ -254,12 +255,12 @@ def main():
     # print("extracting test data...")
     # t = data_util._get_data(t_paths, split_data=False, only_first_window=True,
     #                         progress_bar=True)
-
-    output_path = os.path.join(root_path, "test")
-    save_objects(output_path, t)
-
-    t = None
-    print("test data saved to", output_path)
+    #
+    # output_path = os.path.join(root_path, "test")
+    # save_objects(output_path, t)
+    #
+    # t = None
+    # print("test data saved to", output_path)
 
 
 if __name__ == '__main__':
