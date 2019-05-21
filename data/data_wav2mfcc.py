@@ -20,7 +20,7 @@ from pianition import data_util
 ################################################################################
 # Constants
 
-data_dir = "."
+data_dir = "data/"
 sample_dir = os.path.join(data_dir, "samples")
 
 meta_data_fn = 'maestro-v2.0.0.json'

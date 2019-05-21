@@ -14,9 +14,9 @@ from typing import Tuple, List
 ################################################################################
 # Constants
 
-root_dir = ".."
+root_dir = "data"
 
-info_file_path = os.path.join(root_dir, "data/info.npz")
+info_file_path = os.path.join(root_dir, "info.npz")
 
 each_column_is_mfcc = True
 time_axis = 1 if each_column_is_mfcc else 0
