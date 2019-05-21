@@ -14,8 +14,7 @@ import os
 import json
 
 import numpy as np
-
-from pianition import data_util
+import librosa
 
 ################################################################################
 # Constants
@@ -31,8 +30,30 @@ json_key_composer_name = 'canonical_composer'
 json_key_song_name = 'canonical_title'
 json_key_audio_file_path = 'audio_filename'
 
+json_mffc_hop_length = 'hop_length'
+json_mffc_n_fft = 'n_fft'
+json_mffc_id_to_composer = 'id_to_composer'
+json_mffc_composer_to_id = 'composer_to_id'
+json_mffc_song_to_id = 'song_to_id'
+json_mffc_id_to_song = 'id_to_song'
+json_mffc_n_samples = 'n_samples'
+json_mffc_paths = 'paths'
+json_mffc_paths_composer_id = 'paths_composer_id'
+json_mffc_paths_song_id = 'paths_song_id'
+
+
 ################################################################################
 # Loading wave files and creation of spectrograms
+
+
+def create_spectogram(audio_file_path, n_fft=2048, hop_length=1024):
+    y, sr = librosa.load(audio_file_path)
+
+    spect = librosa.feature.melspectrogram(y=y, sr=sr,
+                                           n_fft=n_fft, hop_length=hop_length)
+    spect = librosa.power_to_db(spect, ref=np.max)
+
+    return spect.T
 
 
 def get_audio_path(audio_fn):
@@ -42,9 +63,12 @@ def get_audio_path(audio_fn):
 def convert(audio_file, idx, total, n_fft=2048, hop_length=1024):
     print("\r{}/{}".format(idx, total), end='', flush=True)
 
-    spectogram = data_util.create_spectogram(audio_file, n_fft=n_fft, hop_length=hop_length)
+    spectogram = create_spectogram(audio_file, n_fft=n_fft, hop_length=hop_length)
 
     return spectogram
+
+#################################################################################
+# Execution of wav2mfcc logic
 
 
 def main():
@@ -103,16 +127,16 @@ def main():
     n_samples = len(data_samples)
 
     info = {
-        data_util.json_mffc_n_samples: n_samples,
-        data_util.json_mffc_composer_to_id: composer_to_id,
-        data_util.json_mffc_id_to_composer: id_to_composer,
-        data_util.json_mffc_song_to_id: song_to_id,
-        data_util.json_mffc_id_to_song: id_to_song,
-        data_util.json_mffc_n_fft: n_fft,
-        data_util.json_mffc_hop_length: hop_length,
-        data_util.json_mffc_paths: paths,
-        data_util.json_mffc_paths_composer_id: paths_composer_id,
-        data_util.json_mffc_paths_song_id: paths_song_id
+        json_mffc_n_samples: n_samples,
+        json_mffc_composer_to_id: composer_to_id,
+        json_mffc_id_to_composer: id_to_composer,
+        json_mffc_song_to_id: song_to_id,
+        json_mffc_id_to_song: id_to_song,
+        json_mffc_n_fft: n_fft,
+        json_mffc_hop_length: hop_length,
+        json_mffc_paths: paths,
+        json_mffc_paths_composer_id: paths_composer_id,
+        json_mffc_paths_song_id: paths_song_id
     }
 
     with open(os.path.join(data_dir, "mfcc.json"), 'w') as f:
