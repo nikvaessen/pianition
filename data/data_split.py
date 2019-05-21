@@ -83,6 +83,9 @@ def create_split_paths():
 # main function executing the splitting logic
 
 def save_objects(output_path, object_list):
+    if not os.path.isdir(output_path):
+        os.mkdir(output_path)
+
     for idx, (id, sample) in enumerate(object_list):
         full_path = os.path.join(output_path, "sample{}.npz".format(idx))
 
@@ -96,6 +99,9 @@ def main():
 
     root_path = sys.argv[1]
     print("saving data to", root_path)
+
+    if not os.path.isdir(root_path):
+        os.mkdir(root_path)
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
