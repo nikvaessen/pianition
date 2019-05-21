@@ -144,6 +144,8 @@ def get_allowed_paths(use_only_count_bigger_than=30):
 
     allowed_composers = [id for id, count in get_id_count().items()
                          if count > use_only_count_bigger_than]
+    print("id count:", get_id_count())
+    print("allowed composers", allowed_composers)
 
     allowed_paths = []
 
