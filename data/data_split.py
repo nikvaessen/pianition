@@ -17,7 +17,6 @@ from pianition import data_util
 # Constants
 
 split_fraction = (70, 20, 10)
-print("split", split_fraction)
 minimum_num_samples_by_composer = 30
 
 json_data_train_path = "train_path"
