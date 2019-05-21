@@ -245,6 +245,47 @@ def save_dataset(paths, save_path):
     }
 
 
+def fix_labels(info, id_to_composer, id_to_song):
+    seen_composer_id = set()
+    seen_song_id = set()
+
+    train = info[json_data_train]
+    val = info[json_data_val]
+    test = info[json_data_test]
+
+    for d in [train, val, test]:
+        song_ids = d[json_data_set_song_label]
+        composer_ids = d[json_data_set_composer_label]
+
+        for song_id in song_ids:
+            seen_song_id.add(song_id)
+
+        for composer_id in composer_ids:
+            seen_composer_id.add(composer_id)
+
+    seen_song_id = [song_id for song_id in seen_song_id]
+    seen_composer_id = [composer_id for composer_id in seen_composer_id]
+
+    map_song_id = {idx: id_to_song[str(song_id)]
+                   for idx, song_id in enumerate(seen_song_id)}
+
+    map_composer_id = {idx: id_to_composer[str(composer_id)]
+                       for idx, composer_id in enumerate(seen_composer_id)}
+
+    info[json_data_label_to_composer] = map_composer_id
+    info[json_data_label_to_song] = map_song_id
+
+    for d in [train, val, test]:
+        song_ids = d[json_data_set_song_label]
+        composer_ids = d[json_data_set_composer_label]
+
+        for i in range(0, len(song_ids)):
+            song_ids[i] = seen_song_id.index(song_ids[i])
+
+        for i in range(0, len(composer_ids)):
+            composer_ids[i] = seen_composer_id.index(composer_ids[i])
+
+
 def main():
     if len(sys.argv) != 2:
         print("usage: python3 data_split path_to_storage")
@@ -274,8 +315,16 @@ def main():
     info[json_data_test] = save_dataset(t_paths, t_output)
 
     with open(os.path.join(root_path, "info.json"), 'w') as f:
-        json.dump(info, f)
+        json.dump(info, f, indent=4)
 
+    mfcc_info = get_info()
+    id_to_composer = mfcc_info[mfcc.json_mffc_id_to_composer]
+    id_to_song = mfcc_info[mfcc.json_mffc_id_to_song]
+
+    fix_labels(info, id_to_composer, id_to_song)
+
+    with open(os.path.join(root_path, "info.json"), 'w') as f:
+        json.dump(info, f, indent=4)
 
 
 if __name__ == '__main__':
