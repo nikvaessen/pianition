@@ -1,0 +1,41 @@
+{
+  "train": {
+    "path": [
+      "debug/train/sample0.npz",
+      "debug/train/sample1.npz",
+      "debug/train/sample2.npz",
+      "debug/train/sample3.npz",
+      "debug/train/sample4.npz",
+      "debug/train/sample5.npz",
+      "debug/train/sample6.npz"
+    ],
+    "composer-label": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "song-label": [
+      244,
+      705,
+      360,
+      420,
+      378,
+      75,
+      602
+    ]
+  },
+  "val": {
+    "path": [],
+    "composer-label": [],
+    "song-label": []
+  },
+  "test": {
+    "path": [],
+    "composer-label": [],
+    "song-label": []
+  }
+}

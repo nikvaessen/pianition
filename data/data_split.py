@@ -167,7 +167,9 @@ def get_allowed_paths(use_only_count_bigger_than=30):
 
 
 def tracks_by_composer_id():
-    allowed_tracks = get_allowed_paths(use_only_count_bigger_than=minimum_num_samples_by_composer)
+    allowed_tracks = get_allowed_paths(
+        use_only_count_bigger_than=minimum_num_samples_by_composer)
+
     track_by_composer = {}
 
     for track, comp_id, song_id in allowed_tracks:
@@ -213,14 +215,34 @@ def create_split_paths():
 ################################################################################
 # main function executing the splitting logic
 
-def save_objects(output_path, object_list):
+def save_mfcc_array(mfcc_array, output_path):
     if not os.path.isdir(output_path):
         os.mkdir(output_path)
 
-    for idx, (id, sample) in enumerate(object_list):
+    used_paths = []
+
+    for idx, mfcc_obj in enumerate(mfcc_array):
         full_path = os.path.join(output_path, "sample{}.npz".format(idx))
 
-        np.savez_compressed(full_path, (id, sample))
+        np.savez_compressed(full_path, mfcc_obj)
+        used_paths.append(full_path)
+
+    return used_paths
+
+
+def save_dataset(paths, save_path):
+    mfcc, label_composer, label_song = get_data(paths,
+                                                split_data=False,
+                                                only_first_window=True,
+                                                progress_bar=True)
+
+    used_paths = save_mfcc_array(mfcc, save_path)
+
+    return {
+        json_data_set_path: used_paths,
+        json_data_set_composer_label: label_composer,
+        json_data_set_song_label: label_song
+    }
 
 
 def main():
@@ -236,37 +258,24 @@ def main():
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
-    print(tr_paths[0:5])
+    info = {}
+
     # Training data
     print("extracting training data...")
-    tr = get_data(tr_paths, split_data=False, only_first_window=True,
-                  progress_bar=True)
-    # print(tr)
-    print(tr[0])
-    # output_pa
+    tr_output = os.path.join(root_path, json_data_train)
+    info[json_data_train] = save_dataset(tr_paths, tr_output)
 
-    # print("training data saved to", output_path)
-    #
-    # # Validation data
-    # print("extracting validation data...")
-    # v = data_util._get_data(v_paths, split_data=False, only_first_window=True,
-    #                         progress_bar=True)
-    # output_path = os.path.join(root_path, "val")
-    # save_objects(output_path, v)
-    #
-    # v = None
-    # print("validation data saved to", output_path)
-    #
-    # # Testing data
-    # print("extracting test data...")
-    # t = data_util._get_data(t_paths, split_data=False, only_first_window=True,
-    #                         progress_bar=True)
-    #
-    # output_path = os.path.join(root_path, "test")
-    # save_objects(output_path, t)
-    #
-    # t = None
-    # print("test data saved to", output_path)
+    print("extracting validation data...")
+    v_output = os.path.join(root_path, json_data_val)
+    info[json_data_val] = save_dataset(v_paths, v_output)
+
+    print("extracting test data...")
+    t_output = os.path.join(root_path, json_data_test)
+    info[json_data_test] = save_dataset(t_paths, t_output)
+
+    with open(os.path.join(root_path, "info.json"), 'w') as f:
+        json.dump(info, f)
+
 
 
 if __name__ == '__main__':
