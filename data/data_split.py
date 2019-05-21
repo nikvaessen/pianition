@@ -39,7 +39,7 @@ info_file_path = os.path.join("mfcc", "mfcc.json")
 
 each_column_is_mfcc = True
 time_axis = 1 if each_column_is_mfcc else 0
-mffc_axis = 1 if time_axis == 0 else 0
+mfcc_axis = 1 if time_axis == 0 else 0
 
 
 ################################################################################
@@ -94,24 +94,32 @@ def get_data(paths,
                          "should be > 1 and integer".format(window_size))
 
     gave_warning = False
-    data_tuples = []
 
-    for idx, path in enumerate(paths):
+    sample_mfcc = []
+    label_composer = []
+    label_song = []
+
+    for idx, (path, composer_id, song_id) in enumerate(paths):
         if progress_bar:
             print("\r{}/{}".format(idx, len(paths)), flush=True, end="")
 
         if os.path.exists(path):
-            id, sample = load_sample(path)
+            _, mfcc_arr = load_sample(path)
 
             if split_data:
-                samples = [(id, sample) for sample in
-                           split_sample(sample, window_size=window_size)]
+                samples = [sample for sample in
+                           split_sample(mfcc_arr, window_size=window_size)]
             else:
-                samples = [(id, extract_first_window(sample,
-                                                     window_size=window_size))
+                samples = [(extract_first_window(mfcc_arr,
+                                                 window_size=window_size))
                            ]
 
-            data_tuples += samples
+            sample_composer_id = [composer_id for _ in samples]
+            sample_song_id = [song_id for _ in samples]
+
+            sample_mfcc += samples
+            label_composer += sample_composer_id
+            label_song += sample_song_id
 
         elif not gave_warning:
             gave_warning = True
@@ -120,8 +128,8 @@ def get_data(paths,
 
     if progress_bar:
         print()
-
-    return data_tuples
+s
+    return sample_mfcc, label_composer, label_song
 
 
 def get_id_count():
@@ -236,9 +244,6 @@ def main():
     # print(tr)
     print(tr[0])
     # output_pa
-
-
-
 
     # print("training data saved to", output_path)
     #
