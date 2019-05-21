@@ -22,14 +22,17 @@ each_column_is_mfcc = True
 time_axis = 1 if each_column_is_mfcc else 0
 mffc_axis = 1 if time_axis == 0 else 0
 
-json_info_paths = 'paths'
-json_info_hop_length = 'hop_length'
-json_info_n_fft = 'n_fft'
-json_info_id_to_composer = 'id_to_composer'
-json_info_composer_to_id = 'composer_to_id'
-json_info_n_samples = 'n_samples'
-json_info_paths_id = 'paths_id'
-
+json_mffc_hop_length = 'hop_length'
+json_mffc_n_fft = 'n_fft'
+json_mffc_id_to_composer = 'id_to_composer'
+json_mffc_composer_to_id = 'composer_to_id'
+json_mffc_song_to_id = 'song_to_id'
+json_mffc_id_to_song = 'id_to_song'
+json_mffc_n_samples = 'n_samples'
+json_mffc_paths = 'paths'
+json_mffc_paths_composer_id = 'paths_composer_id'
+json_mffc_paths_song_id = 'paths_song_id'
+# json_mfcc_paths_song_id
 
 ################################################################################
 # Spectogram creation
@@ -175,7 +178,20 @@ def get_testing_data():
 ################################################################################
 
 def main():
-    get_train_val_test_paths()
+    dir = "/home/nik/kth/y1p1/speech/project/data/debug/"
+    train_dir = os.path.join(dir, "train")
+    val_dir = os.path.join(dir, "val")
+    test_dir = os.path.join(dir, "test")
+
+    for file in os.listdir(train_dir):
+        obj = np.load(os.path.join(train_dir, file), allow_pickle=True)['arr_0']
+
+        ID, sample = obj
+        print(ID)
+        # print(sample)
+        print(sample.shape)
+        print()
+
 
 
 if __name__ == '__main__':
