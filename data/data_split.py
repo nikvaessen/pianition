@@ -233,6 +233,7 @@ def main():
     print("extracting training data...")
     tr = get_data(tr_paths, split_data=False, only_first_window=True,
                   progress_bar=True)
+    print(tr)
     print(tr[0])
     # output_pa
 
