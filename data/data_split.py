@@ -86,6 +86,7 @@ def create_split_paths():
 def main():
     if len(sys.argv) != 2:
         print("usage: python3 data_split path_to_storage")
+        exit()
 
     root_path = sys.argv[1]
     print("saving data to", root_path)
