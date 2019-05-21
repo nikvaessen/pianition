@@ -230,10 +230,17 @@ def save_mfcc_array(mfcc_array, output_path):
     return used_paths
 
 
-def save_dataset(paths, save_path):
+def save_dataset(paths, save_path, debug=False):
+    if debug:
+        split_data = False
+        only_first_window = True
+    else:
+        split_data = True
+        only_first_window = False
+
     mfcc, label_composer, label_song = get_data(paths,
-                                                split_data=False,
-                                                only_first_window=True,
+                                                split_data=split_data,
+                                                only_first_window=only_first_window,
                                                 progress_bar=True)
 
     used_paths = save_mfcc_array(mfcc, save_path)
@@ -287,12 +294,22 @@ def fix_labels(info, id_to_composer, id_to_song):
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("usage: python3 data_split path_to_storage")
+    if len(sys.argv) != 3:
+        print("usage: python3 data_split path_to_storage [full/debug]")
         exit()
 
     root_path = sys.argv[1]
     print("saving data to", root_path)
+
+    if sys.argv[2] == 'debug':
+        debug = True
+        print("generating debug dataset...")
+    elif sys.argv[2] == 'full':
+        debug = False
+        print("generating full dataset...")
+    else:
+        debug = None
+        raise ValueError("second argument should be one of 'full' or 'debug'")
 
     if not os.path.isdir(root_path):
         os.mkdir(root_path)
@@ -304,15 +321,15 @@ def main():
     # Training data
     print("extracting training data...")
     tr_output = os.path.join(root_path, json_data_train)
-    info[json_data_train] = save_dataset(tr_paths, tr_output)
+    info[json_data_train] = save_dataset(tr_paths, tr_output, debug=debug)
 
     print("extracting validation data...")
     v_output = os.path.join(root_path, json_data_val)
-    info[json_data_val] = save_dataset(v_paths, v_output)
+    info[json_data_val] = save_dataset(v_paths, v_output, debug=debug)
 
     print("extracting test data...")
     t_output = os.path.join(root_path, json_data_test)
-    info[json_data_test] = save_dataset(t_paths, t_output)
+    info[json_data_test] = save_dataset(t_paths, t_output, debug=debug)
 
     with open(os.path.join(root_path, "info.json"), 'w') as f:
         json.dump(info, f, indent=4)
