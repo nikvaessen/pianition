@@ -1,41 +1,29 @@
-#!/usr/bin/env python
-# coding: utf-8
+################################################################################
+#
+# Author(s): Sri
+################################################################################
 
-# In[17]:
-
-
-import numpy as np
-import os
-from os.path import isfile
-from PIL import Image as Img
-from data_util import *
 from datetime import datetime
 
 import keras
-from keras.models import Sequential, Model
-from keras.utils import plot_model
-from keras.layers import Input, Dense, TimeDistributed, LSTM, Dropout, Activation
-from keras.layers import Conv1D, MaxPooling1D, Flatten, Conv2D, BatchNormalization, Lambda
-from keras.layers.advanced_activations import ELU
-from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
-from keras import backend
-from keras.utils import np_utils
-from keras.optimizers import Adam, RMSprop
-from keras import regularizers
 
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
+from keras.models import Model
+from keras.layers import Dense, LSTM, Dropout, Activation
+from keras.layers import Conv1D, MaxPooling1D, BatchNormalization
+from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
+from keras.optimizers import Adam
+from keras import regularizers
 
 import tensorflow as tf
 
-
-# In[2]:
-
+################################################################################
 
 SHUFFLE_BUFFER = 1000
 BATCH_SIZE = 32
 NUM_CLASSES = 12
+
+################################################################################
+
 
 # Create a description of the features.  
 feature_description = {
@@ -43,37 +31,38 @@ feature_description = {
     'feature1': tf.FixedLenFeature([1], tf.int64)
 }
 
+
 def _parse_function(example_proto):
-  # Parse the input tf.Example proto using the dictionary above.
+    # Parse the input tf.Example proto using the dictionary above.
     parsed_example = tf.parse_single_example(example_proto, feature_description)
-    parsed_example["feature0"] = tf.transpose(tf.reshape(parsed_example['feature0'], (256,128)))
+    parsed_example["feature0"] = tf.transpose(tf.reshape(parsed_example['feature0'], (256, 128)))
     return parsed_example
 
+
 def create_dataset(filepath):
-    
     dataset = tf.data.TFRecordDataset(filepath)
-    
-    dataset = dataset.map(_parse_function) #, num_parallel_calls=8)
-    
+
+    dataset = dataset.map(_parse_function)  # , num_parallel_calls=8)
+
     # This dataset will go on forever
     dataset = dataset.repeat()
-    
+
     # Set the number of datapoints you want to load and shuffle 
     dataset = dataset.shuffle(SHUFFLE_BUFFER)
     dataset = dataset.batch(BATCH_SIZE)
-    
+
     # Create an iterator
     iterator = dataset.make_one_shot_iterator()
-    
+
     # Create your tf representation of the iterator
     feature = iterator.get_next()
-    #print(feature)
+    # print(feature)
     lmfcc = feature["feature0"]
     label = feature["feature1"]
-    
+
     # Bring your picture back in shape
-    lmfcc = tf.reshape(lmfcc, [-1,128, 256])
-    
+    lmfcc = tf.reshape(lmfcc, [-1, 128, 256])
+
     # Create a one hot array for your labels
     label = tf.one_hot(label, NUM_CLASSES)
     print(lmfcc.shape)
@@ -81,8 +70,7 @@ def create_dataset(filepath):
 
     return lmfcc, label
 
-
-# In[3]:
+################################################################################
 
 
 lmfcc, label = create_dataset("../data/debug/sample.tfrecords")
@@ -100,17 +88,17 @@ def get_callbacks(checkpoint_name):
                      write_grads=True,
                      update_freq='epoch')
 
-#     tb_callback = TensorBoard(
-#         log_dir='../models/logs/',
-#         histogram_freq=1,
-#         batch_size=32,
-#         write_graph=True,
-#         write_grads=False,
-#         write_images=False,
-#         embeddings_freq=0,
-#         embeddings_layer_names=None,
-#         embeddings_metadata=None,
-#     )
+    #     tb_callback = TensorBoard(
+    #         log_dir='../models/logs/',
+    #         histogram_freq=1,
+    #         batch_size=32,
+    #         write_graph=True,
+    #         write_grads=False,
+    #         write_images=False,
+    #         embeddings_freq=0,
+    #         embeddings_layer_names=None,
+    #         embeddings_metadata=None,
+    #     )
 
     checkpoint_callback = ModelCheckpoint('../models/' + checkpoint_name +
                                           '{epoch:02d}-{val_loss:.2f}.hdf5',
@@ -134,10 +122,10 @@ def get_callbacks(checkpoint_name):
 
 
 # Data iterator
-lmfcc, label = create_dataset("../data/debug/train.tfrecords")
-lmfcc_val, label_val = create_dataset("../data/debug/val.tfrecords")
+lmfcc, label = create_dataset("../data/full/train.tfrecords")
+lmfcc_val, label_val = create_dataset("../data/full/val.tfrecords")
 
-#Build network
+# Build network
 NUM_CLASSES = 12  # Must Change in the tf reader as well
 N_LAYERS = 3
 FILTER_LENGTH = 5
@@ -180,28 +168,25 @@ for i in range(N_LAYERS):
 
 model_output = Dense(NUM_CLASSES, activation='relu')(model_output)
 
-#Create your model
+# Create your model
 train_model = Model(inputs=model_input, outputs=model_output)
 
-#compile
+# compile
 train_model.compile(loss='categorical_crossentropy',
                     optimizer=Adam(lr=0.001),
                     metrics=['accuracy'],
                     target_tensors=[label])
 
-#Train the model
-#steps per epoch could be viewed as dataset/batchsize
+# Train the model
+# steps per epoch could be viewed as dataset/batchsize
+
 batch_size = 16
+train_size = 21504
+val_size = 6869
+
 # Better to change checkpoint name before run
 train_model.fit(epochs=70,
-                steps_per_epoch=100,
+                steps_per_epoch=train_size//batch_size,
                 validation_data=(lmfcc_val, label_val),
-                validation_steps=100,
+                validation_steps=val_size//batch_size,
                 callbacks=get_callbacks(checkpoint_name="trail"))
-
-
-# In[ ]:
-
-
-
-
