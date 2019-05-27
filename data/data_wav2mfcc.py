@@ -23,9 +23,8 @@ data_dir = "mfcc"
 sample_dir = os.path.join(data_dir, "samples")
 sample_dir_standalone = "samples"
 
-meta_data_fn = os.path.join('maestro-v2.0.0.json')
-data_zip_fn = os.path.join('maestro-v2.0.0.zip')
 unzipped_dir_name = os.path.join('maestro-v2.0.0')
+meta_data_fn = os.path.join(unzipped_dir_name, 'maestro-v2.0.0.json')
 
 json_key_composer_name = 'canonical_composer'
 json_key_song_name = 'canonical_title'
