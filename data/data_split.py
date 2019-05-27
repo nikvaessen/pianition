@@ -147,7 +147,7 @@ def get_id_count():
     return count
 
 
-def get_allowed_paths(use_only_count_bigger_than=30):
+def get_allowed_paths(use_only_count_bigger_than=30, only_use_song_once=True):
     info = get_info()
 
     allowed_composers = [id for id, count in get_id_count().items()
@@ -159,9 +159,13 @@ def get_allowed_paths(use_only_count_bigger_than=30):
     paths_composer_id = info[mfcc.json_mffc_paths_composer_id]
     paths_song_id = info[mfcc.json_mffc_paths_song_id]
 
+    used_song_id = []
+
     for path, comp_id, song_id in zip(paths, paths_composer_id, paths_song_id):
         if comp_id in allowed_composers:
-            allowed_paths.append((path, comp_id, song_id))
+            if not only_use_song_once or song_id not in used_song_id:
+                allowed_paths.append((path, comp_id, song_id))
+                used_song_id.append(song_id)
 
     return allowed_paths
 
@@ -308,7 +312,6 @@ def main():
         debug = False
         print("generating full dataset...")
     else:
-        debug = None
         raise ValueError("second argument should be one of 'full' or 'debug'")
 
     if not os.path.isdir(root_path):

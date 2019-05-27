@@ -118,9 +118,9 @@ def main():
         sample_path = os.path.join(sample_dir,
                                    "sample_{}.npz".format(idx))
 
-        # mfcc = convert(audio_file, idx, len(data_samples))
-        # saved_sample = (composer_id, mfcc)
-        # np.savez_compressed(sample_path, saved_sample)
+        mfcc = convert(audio_file, idx, len(data_samples))
+        saved_sample = (composer_id, mfcc)
+        np.savez_compressed(sample_path, saved_sample)
 
         paths.append(sample_path)
         paths_composer_id.append(composer_id)
