@@ -62,12 +62,15 @@ def load_sample(path: str) -> Tuple[int, np.ndarray]:
 
 def split_sample(sample: np.ndarray, window_size=256) -> List[np.ndarray]:
     num_splits = sample.shape[time_axis] // window_size
+    print()
+    print(sample.shape, num_splits, time_axis)
 
     if each_column_is_mfcc:
         sample = sample[:, 0:num_splits * window_size]
     else:
         sample = sample[0:num_splits * window_size, :]
 
+    print(sample.shape)
     samples = np.split(sample, num_splits, axis=time_axis)
 
     return samples
@@ -102,6 +105,8 @@ def get_data(paths,
     for idx, (path, composer_id, song_id) in enumerate(paths):
         if progress_bar:
             print("\r{}/{}".format(idx, len(paths)), flush=True, end="")
+
+        print(path, composer_id, song_id)
 
         if os.path.exists(path):
             _, mfcc_arr = load_sample(path)
@@ -317,7 +322,7 @@ def main():
         raise ValueError("second argument should be one of 'full' or 'debug'")
 
     window_size = int(sys.argv[3])
-    valid_ws = [256, 512, 768, 1024, 1280, 1536]
+    valid_ws = [128, 256, 512, 768, 1024, 1280, 1536]
 
     if window_size not in valid_ws:
         raise ValueError('window size {} is not one of {}'.format(window_size,
@@ -326,7 +331,6 @@ def main():
     if not os.path.isdir(root_path):
         os.mkdir(root_path)
         print('made dir', root_path)
-
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
