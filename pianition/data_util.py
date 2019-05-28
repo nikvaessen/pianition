@@ -120,25 +120,28 @@ class Dataset:
 
         return x
 
-    def load_labels(self, paths):
-        return np.array([to_categorical(label, num_classes=self.num_classes)
-                         for label in paths])
+    def load_labels(self, paths, output_encoded):
+        if output_encoded:
+            return np.array([to_categorical(label, num_classes=self.num_classes)
+                             for label in paths])
+        else:
+            return np.array([label for label in paths])
 
-    def get_train_full(self, flatten=False):
+    def get_train_full(self, flatten=False, output_encoded=True):
         x = self.load_mfcc(self.train_paths, flatten=flatten)
-        y = self.load_labels(self.train_labels)
+        y = self.load_labels(self.train_labels, output_encoded)
 
         return x, y
 
-    def get_val_full(self, flatten=False):
+    def get_val_full(self, flatten=False, output_encoded=True):
         x = self.load_mfcc(self.val_paths, flatten=flatten)
-        y = self.load_labels(self.val_labels)
+        y = self.load_labels(self.val_labels, output_encoded)
 
         return x, y
 
-    def get_test_full(self, flatten=False):
+    def get_test_full(self, flatten=False, output_encoded=True):
         x = self.load_mfcc(self.test_paths, flatten=flatten)
-        y = self.load_labels(self.test_labels)
+        y = self.load_labels(self.test_labels, output_encoded)
 
         return x, y
 
