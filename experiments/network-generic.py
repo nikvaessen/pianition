@@ -107,7 +107,7 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 # run_exps(path="/media/drive/data/debug512", dataset_type='debug')
 # run_exps(path="/media/drive/data/debug768", dataset_type='debug')
 
-num_epochs = 4
+num_epochs = 200
 
 run_exps(path="/media/drive/data/full128", dataset_type='full', epochs=num_epochs)
 run_exps(path="/media/drive/data/full256", dataset_type='full', epochs=num_epochs)
