@@ -95,10 +95,10 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 
 # full
 
-run_exps(path="/media/drive/data/debug128", dataset_type='debug')
-run_exps(path="/media/drive/data/debug256", dataset_type='debug')
-run_exps(path="/media/drive/data/debug512", dataset_type='debug')
-run_exps(path="/media/drive/data/debug768", dataset_type='debug')
+# run_exps(path="/media/drive/data/debug128", dataset_type='debug')
+# run_exps(path="/media/drive/data/debug256", dataset_type='debug')
+# run_exps(path="/media/drive/data/debug512", dataset_type='debug')
+# run_exps(path="/media/drive/data/debug768", dataset_type='debug')
 
 run_exps(path="/media/drive/data/full128", dataset_type='full')
 run_exps(path="/media/drive/data/full256", dataset_type='full')
