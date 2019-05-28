@@ -12,4 +12,4 @@ python3 data_mfcc2split.py full512 full 512
 python3 data_mfcc2split.py full768 full 768
 python3 data_mfcc2split.py full1024 full 1024
 python3 data_mfcc2split.py full1280 full 1280
-python3 data_mfcc2split.py full1536 full 1536s
+python3 data_mfcc2split.py full1536 full 1536
