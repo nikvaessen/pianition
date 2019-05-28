@@ -41,6 +41,7 @@ def get_callbacks(checkpoint_name):
                                           factor=0.5,
                                           patience=10,
                                           min_delta=0.01,
+                                          min_lr=0.000001,
                                           verbose=1)
 
     callback_list = [checkpoint_callback, reducelr_callback, tb]
@@ -100,7 +101,7 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 # run_exps(path="/media/drive/data/debug512", dataset_type='debug')
 # run_exps(path="/media/drive/data/debug768", dataset_type='debug')
 
-num_epochs=200
+num_epochs = 4
 
 run_exps(path="/media/drive/data/full128", dataset_type='full', epochs=num_epochs)
 run_exps(path="/media/drive/data/full256", dataset_type='full', epochs=num_epochs)
