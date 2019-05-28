@@ -111,8 +111,10 @@ def run_exps(path = "../data/",dataset_type="full", epochs=1, batch_size=32, lr=
 
 # In[5]:
 
+# full
 
-_ = run_exps(path="../data/", dataset_type='debug')
+run_exps(path="/media/drive/data/", dataset_type='debug')
+run_exps(path="/media/drive/data/", dataset_type='full')
 
 
 # In[ ]:
