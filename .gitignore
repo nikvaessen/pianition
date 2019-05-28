@@ -3,3 +3,4 @@ data/mfcc
 data/maestro-v2.0.0
 data/full
 .ipynb_checkpoints
+__pycache__
