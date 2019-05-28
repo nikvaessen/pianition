@@ -3,31 +3,13 @@
 
 # In[1]:
 
-
-import numpy as np_utils
 import os
-from os.path import isfile
-from PIL import Image as Img
 from datetime import datetime
 
 import keras
-from keras.models import Sequential, Model
-from keras.utils import plot_model
-from keras.layers import Input, Dense, TimeDistributed, LSTM, Dropout, Activation
-from keras.layers import Conv1D, MaxPooling1D, Flatten, MaxPooling2D, Reshape
-from keras.layers import Conv2D, BatchNormalization, Lambda, Permute, GRU
-from keras.layers.advanced_activations import ELU
 from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
-from keras import backend
-from keras.utils import np_utils
 from keras.optimizers import Adam, RMSprop
-from keras import regularizers
 
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-
-import tensorflow as tf
 
 import sys
 sys.path.insert(0,'..')
