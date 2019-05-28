@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 import keras
-from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau, EarlyStopping
 from keras.optimizers import Adam, RMSprop
 
 import sys
@@ -24,10 +24,10 @@ from pianition.keras_models import conv1d_gru, RNN
 def get_callbacks(checkpoint_name):
     logDir = "./Graph/" + checkpoint_name + datetime.now().strftime("%H%M%S") + "/"
     tb = TensorBoard(log_dir=logDir,
-                     histogram_freq=2,
-                     write_graph=True,
-                     write_images=True,
-                     write_grads=True,
+                     histogram_freq=0,
+                     write_graph=False,
+                     write_images=False,
+                     write_grads=False,
                      update_freq='epoch')
 
     checkpoint_callback = ModelCheckpoint('../models/' + checkpoint_name +
@@ -39,12 +39,18 @@ def get_callbacks(checkpoint_name):
 
     reducelr_callback = ReduceLROnPlateau(monitor='val_acc',
                                           factor=0.5,
-                                          patience=10,
+                                          patience=5,
                                           min_delta=0.01,
                                           min_lr=0.000001,
                                           verbose=1)
 
-    callback_list = [checkpoint_callback, reducelr_callback, tb]
+    stopping_callback = EarlyStopping(monitor='val_acc',
+                                      min_delta=0.001,
+                                      patience=8,
+                                      verbose=0,
+                                      mode='auto')
+
+    callback_list = [checkpoint_callback, reducelr_callback, tb, stopping_callback]
 
     return callback_list
 
