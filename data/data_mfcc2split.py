@@ -322,7 +322,7 @@ def main():
         raise ValueError("second argument should be one of 'full' or 'debug'")
 
     window_size = int(sys.argv[3])
-    valid_ws = [256, 512, 768, 1024, 1280, 1536]
+    valid_ws = [128, 256, 512, 768, 1024, 1280, 1536]
 
     if window_size not in valid_ws:
         raise ValueError('window size {} is not one of {}'.format(window_size,
