@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[6]:
 
 
 import numpy as np_utils
@@ -16,6 +16,7 @@ from keras.utils import plot_model
 from keras.layers import Input, Dense, TimeDistributed, LSTM, Dropout, Activation
 from keras.layers import Conv1D, MaxPooling1D, Flatten, MaxPooling2D, Reshape
 from keras.layers import Conv2D, BatchNormalization, Lambda, Permute, GRU
+from keras.layers import Bidirectional, concatenate
 from keras.layers.advanced_activations import ELU
 from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras import backend
@@ -32,8 +33,10 @@ import tensorflow as tf
 import sys
 sys.path.insert(0,'..')
 
+import warnings
+
 from pianition.data_util import load_dataset
-from pianition.keras_models import conv1d_gru, RNN
+from pianition.keras_models import conv1d_gru, RNN, parallel
 
 
 # In[2]:
@@ -102,17 +105,27 @@ def run_exps(path = "../data/",dataset_type="full", epochs=1, batch_size=32, lr=
             if(dataset_type in dir):
                 current_data_path = os.path.join(path, dir)
                 print(current_data_path)
+                _ = trainer("parallel", current_data_path, epochs, batch_size, lr)
+                keras.backend.clear_session()
                 _ = trainer("conv1d_gru", current_data_path, epochs, batch_size, lr)
-#                 tf.reset_default_graph()
                 keras.backend.clear_session()
                 _ = trainer("RNN", current_data_path, epochs, batch_size, lr)
                 keras.backend.clear_session()
 
 
-# In[5]:
+
+# In[7]:
 
 
-_ = run_exps(path="../data/", dataset_type='debug')
+warnings.filterwarnings("ignore")
+
+_ = run_exps(path="../data/", dataset_type='full', epochs=200, batch_size=32, lr=0.001)
+
+
+# In[41]:
+
+
+
 
 
 # In[ ]:
