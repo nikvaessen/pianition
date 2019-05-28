@@ -81,10 +81,6 @@ def load_dataset(path: str):
     )
 
 
-def load_paths(paths):
-    return [np.load(path, allow_pickle=True)['arr_0'] for path in paths]
-
-
 class Dataset:
 
     def __init__(self,
@@ -103,26 +99,46 @@ class Dataset:
         self.test_paths = test_paths
         self.test_labels = test_labels
 
+        print('train_paths:', len(train_paths))
+        print('train_labels', len(train_labels))
+
+        print('val_paths:', len(val_paths))
+        print('val_labels', len(val_labels))
+
+        print('test_paths:', len(test_paths))
+        print('test_labels', len(test_labels))
+
         self.num_classes = num_classes
 
-    def get_train_full(self):
-        x = load_paths(self.train_paths)
-        y = [to_categorical(label, num_classes=self.num_classes)
-             for label in self.train_labels]
+    def load_mfcc(self, paths, flatten):
+        x = np.array([np.load(path, allow_pickle=True)['arr_0'] for path in paths])
+
+        if flatten:
+            n = x.shape[0]
+            m = x.shape[1] * x.shape[2]
+            x = x.reshape(n, m)
+
+        return x
+
+    def load_labels(self, paths):
+        return np.array([to_categorical(label, num_classes=self.num_classes)
+                         for label in paths])
+
+    def get_train_full(self, flatten=False):
+        x = self.load_mfcc(self.train_paths, flatten=flatten)
+        y = self.load_labels(self.train_labels)
 
         return x, y
 
-    def get_val_full(self):
-        x = load_paths(self.val_paths)
-        y = [to_categorical(label, num_classes=self.num_classes)
-             for label in self.val_labels]
+    def get_val_full(self, flatten=False):
+        x = self.load_mfcc(self.val_paths, flatten=flatten)
+        y = self.load_labels(self.val_labels)
 
         return x, y
 
-    def get_test_full(self):
-        x = load_paths(self.test_paths)
-        y = [to_categorical(label, num_classes=self.num_classes)
-             for label in self.test_labels]
+    def get_test_full(self, flatten=False):
+        x = self.load_mfcc(self.test_paths, flatten=flatten)
+        y = self.load_labels(self.test_labels)
 
         return x, y
 
