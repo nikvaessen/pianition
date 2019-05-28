@@ -234,7 +234,7 @@ def save_mfcc_array(mfcc_array, output_path):
     return used_paths
 
 
-def save_dataset(paths, save_path, debug=False):
+def save_dataset(paths, save_path, window_size=256, debug=False):
     if debug:
         split_data = False
         only_first_window = True
@@ -244,6 +244,7 @@ def save_dataset(paths, save_path, debug=False):
 
     mfcc, label_composer, label_song = get_data(paths,
                                                 split_data=split_data,
+                                                window_size=window_size,
                                                 only_first_window=only_first_window,
                                                 progress_bar=True)
 
@@ -298,11 +299,12 @@ def fix_labels(info, id_to_composer, id_to_song):
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("usage: python3 data_split path_to_storage [full/debug]")
+    if len(sys.argv) != 4:
+        print("usage: python3 data_split path_to_storage [full/debug] [256/512/768/1024/1280/1536]")
         exit()
 
     root_path = sys.argv[1]
+
     print("saving data to", root_path)
 
     if sys.argv[2] == 'debug':
@@ -314,8 +316,17 @@ def main():
     else:
         raise ValueError("second argument should be one of 'full' or 'debug'")
 
+    window_size = int(sys.argv[3])
+    valid_ws = [256, 512, 768, 1024, 1280, 1536]
+
+    if window_size not in valid_ws:
+        raise ValueError('window size {} is not one of {}'.format(window_size,
+                                                                  valid_ws))
+
     if not os.path.isdir(root_path):
         os.mkdir(root_path)
+        print('made dir', root_path)
+
 
     tr_paths, v_paths, t_paths = create_split_paths()
 
@@ -324,15 +335,18 @@ def main():
     # Training data
     print("extracting training data...")
     tr_output = os.path.join(root_path, json_data_train)
-    info[json_data_train] = save_dataset(tr_paths, tr_output, debug=debug)
+    info[json_data_train] = save_dataset(tr_paths, tr_output,
+                                         window_size=window_size, debug=debug)
 
     print("extracting validation data...")
     v_output = os.path.join(root_path, json_data_val)
-    info[json_data_val] = save_dataset(v_paths, v_output, debug=debug)
+    info[json_data_val] = save_dataset(v_paths, v_output,
+                                       window_size=window_size, debug=debug)
 
     print("extracting test data...")
     t_output = os.path.join(root_path, json_data_test)
-    info[json_data_test] = save_dataset(t_paths, t_output, debug=debug)
+    info[json_data_test] = save_dataset(t_paths, t_output,
+                                        window_size=window_size, debug=debug)
 
     with open(os.path.join(root_path, "info.json"), 'w') as f:
         json.dump(info, f, indent=4)
