@@ -86,9 +86,9 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 
     keras.backend.clear_session()
 
-    trainer("RNN", current_data_path, epochs, batch_size, lr)
-
-    keras.backend.clear_session()
+    # trainer("RNN", current_data_path, epochs, batch_size, lr)
+    #
+    # keras.backend.clear_session()
 
 
 # In[5]:
