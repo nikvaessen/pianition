@@ -24,10 +24,10 @@ from pianition.keras_models import conv1d_gru, RNN
 def get_callbacks(checkpoint_name):
     logDir = "./Graph/" + checkpoint_name + datetime.now().strftime("%H%M%S") + "/"
     tb = TensorBoard(log_dir=logDir,
-                     histogram_freq=0,
-                     write_graph=False,
-                     write_images=False,
-                     write_grads=False,
+                     histogram_freq=5,
+                     write_graph=True,
+                     write_images=True,
+                     write_grads=True,
                      update_freq='epoch')
 
     checkpoint_callback = ModelCheckpoint('../models/' + checkpoint_name +
