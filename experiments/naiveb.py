@@ -5,6 +5,7 @@ import numpy as np
 
 import sys
 import os
+import gc
 
 sys.path.insert(0, '..')
 from pianition.data_util import load_dataset
@@ -22,9 +23,12 @@ else:
 
 print('using root_path', root_path)
 
+paths = [
+    # 'debug128', 'debug256', 'debug512', 'debug768',
+    'full128', 'full256', 'full512', 'full768'
+]
 
-paths = ['debug128', 'debug256', 'debug512', 'debug768',
-         'full128', 'full256', 'full512', 'full768']
+result_txt_path = 'result_naiveb.txt'
 
 
 def test(use_min_max_scaler=False):
@@ -53,12 +57,25 @@ def test(use_min_max_scaler=False):
         print(label_test.shape)
 
         print('')
+
         nb = MultinomialNB()
         nb.fit(mfcc, label)
         score_val = nb.score(mfcc_val, label_val)
         score_test = nb.score(mfcc_test, label_test)
+
         print('val accuracy:', score_val)
         print('test accuracy:', score_test)
+
+        with open(result_txt_path, 'a') as f:
+            f.write("{}\n".format(path))
+            f.write("val acc: {}\ntest acc:{}\n".format(score_val, score_test))
+
+        mfcc, label = None, None
+        mfcc_val, label_val = None, None
+        mfcc_test, label_test = None, None
+
+        gc.collect()
+
         print(end="\n\n\n\n\n\n\n")
 
 
