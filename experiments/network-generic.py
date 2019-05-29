@@ -37,16 +37,16 @@ def get_callbacks(checkpoint_name):
                                           save_best_only=True,
                                           mode='max')
 
-    reducelr_callback = ReduceLROnPlateau(monitor='val_acc',
-                                          factor=0.5,
+    reducelr_callback = ReduceLROnPlateau(monitor='val_loss',
+                                          factor=0.9,
                                           patience=5,
                                           min_delta=0.01,
                                           min_lr=0.000001,
                                           verbose=1)
 
-    stopping_callback = EarlyStopping(monitor='val_acc',
+    stopping_callback = EarlyStopping(monitor='val_loss',
                                       min_delta=0.001,
-                                      patience=8,
+                                      patience=30,
                                       verbose=0,
                                       mode='auto')
 
