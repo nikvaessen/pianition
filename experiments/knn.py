@@ -65,7 +65,7 @@ def test(use_min_max_scaler=False):
         best_score = float('-inf')
 
         for k in range(1, 9, 2):
-            knn = KNeighborsClassifier(n_neighbors=k, n_jobs=-2)
+            knn = KNeighborsClassifier(n_neighbors=k, n_jobs=-1)
             knn.fit(mfcc, label)
             score = knn.score(mfcc_val, label_val)
 
