@@ -46,7 +46,7 @@ def get_callbacks(checkpoint_name):
 
     stopping_callback = EarlyStopping(monitor='val_loss',
                                       min_delta=0.001,
-                                      patience=30,
+                                      patience=25,
                                       verbose=0,
                                       mode='auto')
 
@@ -93,9 +93,9 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 
     keras.backend.clear_session()
 
-    # trainer("RNN", current_data_path, epochs, batch_size, lr)
-    #
-    # keras.backend.clear_session()
+    trainer("RNN", current_data_path, epochs, batch_size, lr)
+
+    keras.backend.clear_session()
 
 
 # In[5]:
