@@ -37,16 +37,16 @@ def get_callbacks(checkpoint_name):
                                           save_best_only=True,
                                           mode='max')
 
-    reducelr_callback = ReduceLROnPlateau(monitor='val_loss',
+    reducelr_callback = ReduceLROnPlateau(monitor='val_acc',
                                           factor=0.9,
-                                          patience=5,
+                                          patience=2,
                                           min_delta=0.01,
                                           min_lr=0.000001,
                                           verbose=1)
 
-    stopping_callback = EarlyStopping(monitor='val_loss',
+    stopping_callback = EarlyStopping(monitor='val_acc',
                                       min_delta=0.001,
-                                      patience=25,
+                                      patience=4,
                                       verbose=0,
                                       mode='auto')
 
@@ -107,7 +107,7 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 # run_exps(path="/media/drive/data/debug512", dataset_type='debug')
 # run_exps(path="/media/drive/data/debug768", dataset_type='debug')
 
-num_epochs = 200
+num_epochs = 75
 
 run_exps(path="/media/drive/data/full128", dataset_type='full', epochs=num_epochs)
 run_exps(path="/media/drive/data/full256", dataset_type='full', epochs=num_epochs)
