@@ -81,6 +81,66 @@ def load_dataset(path: str):
     )
 
 
+class MfccDataset:
+
+    used_composers = [
+        "Johann Sebastian Bach",
+        "Alexander Scriabin",
+        "Claude Debussy",
+        "Joseph Haydn",
+        "Domenico Scarlatti",
+        "Ludwig van Beethoven",
+        "Franz Liszt",
+        "Franz Schubert",
+        "Fr\u00e9d\u00e9ric Chopin",
+        "Robert Schumann",
+         "Sergei Rachmaninoff",
+         "Wolfgang Amadeus Mozart"
+    ]
+
+    def __init__(self, path):
+        self.root_path = path[0:-5]
+
+        with open(os.path.join(path, 'mfcc.json'), 'r') as f:
+            info = json.load(f)
+
+        self.composer_to_id = info['composer_to_id']
+
+        self.mfcc_paths = info['paths']
+        self.composer_labels = info['paths_composer_id']
+        self.song_labels = info['paths_song_id']
+
+    def get_composer_list(self):
+        return MfccDataset.used_composers, \
+               [self.composer_to_id[name] for name in MfccDataset.used_composers]
+
+    def get_song_ids_from_composer(self, composer_id):
+        song_ids = set()
+
+        for composer_label, song_label in zip(self.composer_labels, self.song_labels):
+            if composer_label == composer_id:
+                song_ids.add(song_label)
+
+        return list(song_ids)
+
+    def get_mfcc(self, song_id, flatten):
+        for song_label, path in zip(self.song_labels, self.mfcc_paths):
+            if song_id == song_label:
+                path = os.path.join(self.root_path, path)
+                return load_mfcc([path], flatten)[0, ]
+
+
+def load_mfcc(paths, flatten):
+    x = np.array([np.load(path, allow_pickle=True)['arr_0'] for path in paths])
+
+    if flatten:
+        n = x.shape[0]
+        m = x.shape[1] * x.shape[2]
+        x = x.reshape(n, m)
+
+    return x
+
+
 class Dataset:
 
     def __init__(self,
@@ -110,15 +170,8 @@ class Dataset:
 
         self.num_classes = num_classes
 
-    def load_mfcc(self, paths, flatten):
-        x = np.array([np.load(path, allow_pickle=True)['arr_0'] for path in paths])
-
-        if flatten:
-            n = x.shape[0]
-            m = x.shape[1] * x.shape[2]
-            x = x.reshape(n, m)
-
-        return x
+    def load_mfcc(self, path, flatten):
+        return load_mfcc(path, flatten)
 
     def load_labels(self, paths, output_encoded):
         if output_encoded:
