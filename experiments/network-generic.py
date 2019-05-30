@@ -89,9 +89,9 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
     current_data_path = os.path.join(path)
     print(current_data_path)
 
-    trainer("conv1d_gru", current_data_path, epochs, batch_size, lr)
-
-    keras.backend.clear_session()
+    # trainer("conv1d_gru", current_data_path, epochs, batch_size, lr)
+    #
+    # keras.backend.clear_session()
 
     trainer("RNN", current_data_path, epochs, batch_size, lr)
 
@@ -102,15 +102,10 @@ def run_exps(path="../data/", dataset_type="full", epochs=1, batch_size=32, lr=0
 
 # full
 
-# run_exps(path="/media/drive/data/debug128", dataset_type='debug')
-# run_exps(path="/media/drive/data/debug256", dataset_type='debug')
-# run_exps(path="/media/drive/data/debug512", dataset_type='debug')
-# run_exps(path="/media/drive/data/debug768", dataset_type='debug')
-
 num_epochs = 75
 
-run_exps(path="/media/drive/data/full128", dataset_type='full', epochs=num_epochs)
-run_exps(path="/media/drive/data/full256", dataset_type='full', epochs=num_epochs)
+# run_exps(path="/media/drive/data/full128", dataset_type='full', epochs=num_epochs)
+# run_exps(path="/media/drive/data/full256", dataset_type='full', epochs=num_epochs)
 run_exps(path="/media/drive/data/full512", dataset_type='full', epochs=num_epochs)
 run_exps(path="/media/drive/data/full768", dataset_type='full', epochs=num_epochs)
 
